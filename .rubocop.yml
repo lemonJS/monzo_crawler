@@ -1,0 +1,11 @@
+AllCops:
+  NewCops: enable
+  SuggestExtensions: false
+
+Layout/LineLength:
+  Exclude:
+    - spec/**/*
+
+Metrics/BlockLength:
+  Exclude:
+    - spec/**/*

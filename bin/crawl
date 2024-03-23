@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../src/workers/link_extractor_worker'
+
+link = ARGV.first.strip
+LinkExtractorWorker.perform_async(link)
