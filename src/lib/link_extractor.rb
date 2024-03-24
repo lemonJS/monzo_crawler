@@ -51,10 +51,11 @@ class LinkExtractor
   def validate_href(href)
     validated_uri = URI(href)
 
-    # Assign the host and scheme of the parent link if the
-    # link is relative
+    # Assign the host of the parent link if the link is relative.
+    # Force https if it is not present as most sites will upgrade
+    # http->https and work will be duplicated
     validated_uri.host = uri.host unless validated_uri.host
-    validated_uri.scheme = uri.scheme unless validated_uri.scheme
+    validated_uri.scheme = 'https' unless validated_uri.scheme
 
     # Strip the query string and any fragments as they will
     # create duplicates
