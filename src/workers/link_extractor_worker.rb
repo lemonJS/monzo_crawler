@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'logger'
 require 'sidekiq'
 require_relative '../lib/link_collector'
 require_relative '../lib/link_extractor'

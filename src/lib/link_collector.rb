@@ -20,8 +20,8 @@ class LinkCollector
   def all
     links = redis.hgetall(key)
 
-    # The links are stored as link<>parent. This formats them
-    # as parent<>link[] as that's how you'd expect it to be
+    # The links are stored as { link: parent }. This formats them
+    # as { parent: link[] } as that's how you'd expect it to be
     links.values.each_with_object({}) do |parent, memo|
       memo[parent] = links.filter { |_, p| p == parent }.keys
     end

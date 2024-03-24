@@ -189,21 +189,6 @@ describe LinkExtractor do
       end
     end
 
-    # TODO: this test does nothing
-    context 'when the response has a 3xx code' do
-      let(:http_get_response) do
-        instance_double(HTTParty::Response, code: 301, headers: { Location: 'https://myotherlink.com' })
-      end
-
-      before do
-        allow(HTTParty).to receive(:get).and_return(http_get_response)
-      end
-
-      it 'follows the redirect' do
-        expect(subject).to eq([])
-      end
-    end
-
     context 'when the response has a 4xx code' do
       let(:http_get_response) do
         instance_double(HTTParty::Response, code: 401)

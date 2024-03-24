@@ -23,6 +23,7 @@ Given the 4 hour window I had to make some sacrifices:
   - 401/403/404 should continue to swallow errors as we're unlikely to succeed in the future
 - All redireects are blindly followed
 - There's no concept of a job id so that multiple domains can be crawlled (or the same domain crawlled multiple times)
+- If the same link is found in multiple processes at the same time, they will all be queued, resulting in duplicate work
 - I used Ruby, sorry
 
 Limitations of this design (not related to the time window):
@@ -42,6 +43,10 @@ services:
   worker_2:
     ...
 ```
+
+## Real world experiement
+
+I crawled https://monzo.com, you can see the results [here](./docs/monzo_crawl_results.md).
 
 ## Usage
 
