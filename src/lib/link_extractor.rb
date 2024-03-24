@@ -37,7 +37,7 @@ class LinkExtractor
   end
 
   def known_link?(link)
-    LinkCollector.new.exists?(link)
+    LinkCollector.new.exists?(link:)
   end
 
   def valid_links
@@ -67,7 +67,7 @@ class LinkExtractor
   end
 
   def html
-    response = HTTParty.get(link, { follow_redirects: true, timeout: 5 })
+    response = HTTParty.get(link, follow_redirects: true, timeout: 5)
 
     if response.code != 200
       logger.error("Received a #{response.code} trying to fetch #{link}")

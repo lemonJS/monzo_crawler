@@ -15,7 +15,7 @@ class LinkExtractorWorker
     links = LinkExtractor.new(link).extract_links
 
     links.each do |l|
-      LinkCollector.new.collect!(l)
+      LinkCollector.new.collect!(parent: link, link: l)
       LinkExtractorWorker.perform_async(l)
     end
   end

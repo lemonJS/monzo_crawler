@@ -13,12 +13,12 @@ describe LinkExtractorWorker do
 
     collected_links = LinkCollector.new.all
 
-    expect(collected_links).to match_array(
-      [
+    expect(collected_links).to eq(
+      'https://lemonjs.uk' => [
         'https://lemonjs.uk/',
         'https://lemonjs.uk/posts/a-road-trip-across-norway/',
-        'https://lemonjs.uk/posts/one-million-recordings-at-squeaky/',
         'https://lemonjs.uk/posts/thruxton-round-two/',
+        'https://lemonjs.uk/posts/one-million-recordings-at-squeaky/',
         'https://lemonjs.uk/posts/first-track-day-at-thruxton/'
       ]
     )

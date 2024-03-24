@@ -174,8 +174,8 @@ describe LinkExtractor do
         end
 
         before do
-          allow(link_collector).to receive(:exists?).with('https://mylink.com/link_2').and_return(true)
-          allow(link_collector).to receive(:exists?).with('https://mylink.com/link_3').and_return(true)
+          allow(link_collector).to receive(:exists?).with(link: 'https://mylink.com/link_2').and_return(true)
+          allow(link_collector).to receive(:exists?).with(link: 'https://mylink.com/link_3').and_return(true)
         end
 
         it 'returns a list of urls with the host included' do

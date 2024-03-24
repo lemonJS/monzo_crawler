@@ -9,16 +9,22 @@ class LinkCollector
     @redis = Redis.new(url: ENV.fetch('REDIS_URL', 'redis://localhost:6379'))
   end
 
-  def collect!(link)
-    redis.sadd(key, link)
+  def collect!(parent:, link:)
+    redis.hset(key, link, parent)
   end
 
-  def exists?(link)
-    redis.sismember(key, link)
+  def exists?(link:)
+    redis.hkeys(key).include?(link)
   end
 
   def all
-    redis.smembers(key)
+    links = redis.hgetall(key)
+
+    # The links are stored as link<>parent. This formats them
+    # as parent<>link[] as that's how you'd expect it to be
+    links.values.each_with_object({}) do |parent, memo|
+      memo[parent] = links.filter { |_, p| p == parent }.keys
+    end
   end
 
   private
@@ -26,6 +32,7 @@ class LinkCollector
   attr_reader :redis
 
   def key
+    # This should be a job id of some kind
     'links'
   end
 end
