@@ -21,9 +21,11 @@ Given the 4 hour window I had to make some sacrifices:
 - There's no retry mechanism or back-off
   - 429/5xx statuses could be enqueued again as there's a good chance it will succeed in the future
   - 401/403/404 should continue to swallow errors as we're unlikely to succeed in the future
-- All redireects are blindly followed
+- All redirects are blindly followed
 - There's no concept of a job id so that multiple domains can be crawlled (or the same domain crawlled multiple times)
 - If the same link is found in multiple processes at the same time, they will all be queued, resulting in duplicate work
+  - Sidekiq deduplication is a paid feature so it is omitted here
+  - SQS content-based deduplication would work well here
 - I used Ruby, sorry
 
 Limitations of this design (not related to the time window):
