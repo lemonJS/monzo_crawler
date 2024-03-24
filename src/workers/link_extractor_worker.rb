@@ -13,9 +13,19 @@ class LinkExtractorWorker
   def perform(link)
     links = LinkExtractor.new(link).extract_links
 
+    # Store a record of the link and all the links found
+    link_collector.collect!(link:, links:)
+
+    # For each of the links found, enqueue those that have
+    # not been processed yet
     links.each do |l|
-      LinkCollector.new.collect!(parent: link, link: l)
-      LinkExtractorWorker.perform_async(l)
+      LinkExtractorWorker.perform_async(l) unless link_collector.exists?(link: l)
     end
+  end
+
+  private
+
+  def link_collector
+    @link_collector || LinkCollector.new
   end
 end

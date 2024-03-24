@@ -17,7 +17,6 @@ class LinkExtractor
 
   def extract_links
     links = valid_links
-            .reject { |link| known_link?(link) }
             .filter { |link| matching_host?(link) }
             .uniq
 
@@ -34,10 +33,6 @@ class LinkExtractor
 
   def matching_host?(link)
     uri.host == URI(link).host
-  end
-
-  def known_link?(link)
-    LinkCollector.new.exists?(link:)
   end
 
   def valid_links

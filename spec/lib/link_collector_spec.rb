@@ -3,13 +3,21 @@
 require_relative '../../src/lib/link_collector'
 
 describe LinkCollector do
-  let(:parent) { 'https://mylink.com' }
+  let(:link) { 'https://mylink.com' }
+
+  let(:links) do
+    [
+      'https://mylink.com/1',
+      'https://mylink.com/2',
+      'https://mylink.com/3',
+      'https://mylink.com/4'
+    ]
+  end
+
   let(:instance) { described_class.new }
 
   describe '#collect!' do
-    let(:link) { 'https://mylink.com/mylink' }
-
-    subject { instance.collect!(parent:, link:) }
+    subject { instance.collect!(link:, links:) }
 
     it 'stores the link' do
       expect { subject }.to change { instance.exists?(link:) }.from(false).to(true)
@@ -17,12 +25,10 @@ describe LinkCollector do
   end
 
   describe '#exists?' do
-    let(:link) { 'https://mylink.com' }
-
     subject { instance.exists?(link:) }
 
     context 'when the link exists' do
-      before { instance.collect!(parent:, link:) }
+      before { instance.collect!(link:, links: []) }
 
       it 'returns true' do
         expect(subject).to eq(true)
@@ -37,22 +43,13 @@ describe LinkCollector do
   end
 
   describe '#all' do
-    let(:links) do
-      [
-        'https://mylink.com/1',
-        'https://mylink.com/2',
-        'https://mylink.com/3',
-        'https://mylink.com/4'
-      ]
-    end
-
     subject { instance.all }
 
     before do
-      links.each { |link| instance.collect!(parent:, link:) }
+      instance.collect!(link:, links:)
     end
 
-    it 'returns a hash of links with their parent' do
+    it 'returns a hash of links with the links found' do
       expect(subject).to eq(
         'https://mylink.com' => [
           'https://mylink.com/1',

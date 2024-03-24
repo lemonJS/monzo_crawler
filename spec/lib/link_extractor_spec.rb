@@ -1,18 +1,11 @@
 # frozen_string_literal: true
 
 require 'httparty'
-require_relative '../../src/lib/link_collector'
 require_relative '../../src/lib/link_extractor'
 
 describe LinkExtractor do
   describe '#extract_links' do
     let(:link) { 'https://mylink.com' }
-
-    let(:link_collector) { instance_double(LinkCollector, exists?: false) }
-
-    before do
-      allow(LinkCollector).to receive(:new).and_return(link_collector)
-    end
 
     subject { described_class.new(link).extract_links }
 
@@ -154,35 +147,6 @@ describe LinkExtractor do
           expect(subject).to eq(
             [
               'https://mylink.com/link_1'
-            ]
-          )
-        end
-      end
-
-      context 'and there are some links in the page that have already been collected' do
-        let(:body) do
-          <<-HTML
-            <html>
-              <body>
-                <a href="https://mylink.com/link_1">Link 1</a>
-                <a href="https://mylink.com/link_2">Link 2</a>
-                <a href="https://mylink.com/link_3">Link 3</a>
-                <a href="https://mylink.com/link_4">Link 4</a>
-              </body>
-            </html>
-          HTML
-        end
-
-        before do
-          allow(link_collector).to receive(:exists?).with(link: 'https://mylink.com/link_2').and_return(true)
-          allow(link_collector).to receive(:exists?).with(link: 'https://mylink.com/link_3').and_return(true)
-        end
-
-        it 'returns a list of urls with the host included' do
-          expect(subject).to eq(
-            [
-              'https://mylink.com/link_1',
-              'https://mylink.com/link_4'
             ]
           )
         end

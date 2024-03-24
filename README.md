@@ -23,9 +23,6 @@ Given the 4 hour window I had to make some sacrifices:
   - 401/403/404 should continue to swallow errors as we're unlikely to succeed in the future
 - All redirects are blindly followed
 - There's no concept of a job id so that multiple domains can be crawlled (or the same domain crawlled multiple times)
-- If the same link is found in multiple processes at the same time, they will all be queued, resulting in duplicate work
-  - Sidekiq deduplication is a paid feature so it is omitted here
-  - SQS content-based deduplication would work well here
 - I used Ruby, sorry
 
 Limitations of this design (not related to the time window):
@@ -48,7 +45,7 @@ services:
 
 ## Real world experiement
 
-I crawled https://monzo.com, you can see the results [here](./docs/monzo_crawl_results.md).
+I crawled https://monzo.com to test it out in the real world. It crawled 1449 pages in total before I began getting a lot of 202 status codes back.
 
 ## Usage
 

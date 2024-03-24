@@ -7,8 +7,8 @@ require_relative '../../src/workers/link_extractor_worker'
 describe LinkExtractorWorker do
   let(:link) { 'https://mylink.com' }
 
-  let(:link_collector) { instance_double(LinkCollector, collect!: nil) }
   let(:link_extractor) { instance_double(LinkExtractor, extract_links: []) }
+  let(:link_collector) { instance_double(LinkCollector, collect!: nil, exists?: false) }
 
   before do
     allow(LinkCollector).to receive(:new).and_return(link_collector)
@@ -22,9 +22,9 @@ describe LinkExtractorWorker do
       expect { subject }.not_to change(LinkExtractorWorker.jobs, :size)
     end
 
-    it 'does not append any urls to the url cache' do
+    it 'stores a record of this link and the 0 links it found' do
       subject
-      expect(link_collector).not_to have_received(:collect!)
+      expect(link_collector).to have_received(:collect!).with(link:, links: [])
     end
   end
 
@@ -57,6 +57,36 @@ describe LinkExtractorWorker do
           [links[3]]
         ]
       )
+    end
+
+    it 'stores a record of this link and the links it found' do
+      subject
+      expect(link_collector).to have_received(:collect!).with(link:, links:)
+    end
+
+    context 'and some of the links have already been collected' do
+      before do
+        allow(link_collector).to receive(:exists?).with(link: 'https://mylink.com/bar').and_return(true)
+        allow(link_collector).to receive(:exists?).with(link: 'https://mylink.com/baz').and_return(true)
+      end
+
+      it 'enqueues only the links that are new' do
+        subject
+
+        enqueued_jobs = LinkExtractorWorker.jobs.map { |job| job['args'] }
+
+        expect(enqueued_jobs).to eq(
+          [
+            [links[0]],
+            [links[3]]
+          ]
+        )
+      end
+
+      it 'stores a record of this link and the links it found' do
+        subject
+        expect(link_collector).to have_received(:collect!).with(link:, links:)
+      end
     end
   end
 end

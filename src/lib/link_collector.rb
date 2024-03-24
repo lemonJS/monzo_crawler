@@ -4,27 +4,22 @@ require 'redis'
 
 # A class that abstracts the storage of links
 class LinkCollector
-  def initialize
-    # Ideally we'd have a persistant connection to Redis
-    @redis = Redis.new(url: ENV.fetch('REDIS_URL', 'redis://localhost:6379'))
+  def self.redis
+    # A hacky way of having a persistant redis connection
+    @redis ||= Redis.new(url: ENV.fetch('REDIS_URL', 'redis://localhost:6379'))
   end
 
-  def collect!(parent:, link:)
-    redis.hset(key, link, parent)
+  def collect!(link:, links:)
+    self.class.redis.hset(key, link, links.join(','))
   end
 
   def exists?(link:)
-    redis.hkeys(key).include?(link)
+    self.class.redis.hexists(key, link)
   end
 
   def all
-    links = redis.hgetall(key)
-
-    # The links are stored as { link: parent }. This formats them
-    # as { parent: link[] } as that's how you'd expect it to be
-    links.values.each_with_object({}) do |parent, memo|
-      memo[parent] = links.filter { |_, p| p == parent }.keys
-    end
+    # Split the links as they are stored as strings
+    self.class.redis.hgetall(key).transform_values { |v| v.split(',') }
   end
 
   private
